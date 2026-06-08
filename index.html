@@ -477,8 +477,8 @@ const KEY = "bully:progress";
 
 async function load(){
   try{
-    const r = await window.storage.get(KEY);
-    if(r && r.value) state = JSON.parse(r.value);
+    const saved = localStorage.getItem(KEY);
+    if(saved) state = JSON.parse(saved);
   }catch(e){ /* sem storage: segue em memória */ }
   if(!state.steps) state.steps = {};
   if(!state.dayDates) state.dayDates = {};
@@ -489,8 +489,8 @@ async function load(){
   if(state.fold.rotina===undefined) state.fold.rotina = false;
   if(state.fold.amb===undefined)    state.fold.amb    = false;
 }
-async function save(){
-  try{ await window.storage.set(KEY, JSON.stringify(state)); }catch(e){}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
 }
 
 /* ============ HELPERS ============ */
@@ -764,12 +764,12 @@ document.getElementById('dogName').addEventListener('blur', applyName);
 document.getElementById('resetBtn').addEventListener('click', async ()=>{
   if(!confirm('Recomeçar do zero? Seu progresso será apagado.')) return;
   state = { dogName: state.dogName, steps:{}, dayDates:{}, vax:{}, fold:{ rotina:false, amb:false, dest:false, vax:false } };
-  initVaxDefaults(); await save(); refresh();
+  initVaxDefaults(); save(); refresh();
 });
 
 /* ============ INIT ============ */
 (async function(){
-  await load();
+  load();
   buildJourney();
   buildBadges();
   initVaxDefaults();
